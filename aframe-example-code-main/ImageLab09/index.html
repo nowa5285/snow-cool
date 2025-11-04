@@ -1,18 +1,72 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"> </script>
-     <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+    <script>
+      AFRAME.registerComponent('snowfall', {
+        init: function () {
+          const sceneEl = this.el;
+          for (let i = 0; i < 200; i++) {
+            const snowflake = document.createElement('a-sphere');
+            snowflake.setAttribute('radius', '0.05');
+            snowflake.setAttribute('color', '#FFF');
+            snowflake.setAttribute('position', {
+              x: (Math.random() - 0.5) * 20,
+              y: Math.random() * 10 + 5,
+              z: (Math.random() - 0.5) * 20
+            });
+            snowflake.setAttribute('animation', {
+              property: 'position',
+              to: `0 -5 0`,
+              dur: Math.random() * 4000 + 3000,
+              easing: 'linear',
+              loop: true,
+            });
+            sceneEl.appendChild(snowflake);
+          }
+        }
+      });
+    </script>
   </head>
+
   <body>
-    <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0.1 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <!-- <a-sky color="#ECECEC"></a-sky> -->
-      <!-- the enviroment entity includes a sky. Choose from the presets"none, default, contact, egypt, checkerboard, forest, goaland, yavapai, goldmine, threetowers, poison, arches, tron, japan, dream, volcano, starry, osiris, moon" -->
-      <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
+    <a-scene snowfall fog="type: exponential; color: #cceeff; near: 1; far: 15; density: 0.15">
+      <!-- Ground -->
+      <a-plane position="0 0.05 0" rotation="-90 0 0" width="30" height="30" color="#e0f7fa"></a-plane>
+
+      <!-- Snowman Body -->
+      <a-sphere position="0 1 -5" radius="1" color="#ffffff"></a-sphere>
+      <a-sphere position="0 2.4 -5" radius="0.75" color="#ffffff"></a-sphere>
+      <a-sphere position="0 3.5 -5" radius="0.5" color="#ffffff"></a-sphere>
+
+      <!-- Eyes -->
+      <a-sphere position="0.15 3.6 -4.52" radius="0.05" color="#111111"></a-sphere>
+      <a-sphere position="-0.15 3.6 -4.52" radius="0.05" color="#111111"></a-sphere>
+
+      <!-- Nose -->
+      <a-cone position="0 3.5 -4.45" radius-bottom="0.05" radius-top="0" height="0.3" color="#FFA500" rotation="90 0 0"></a-cone>
+
+      <!-- Smile -->
+      <a-sphere position="-0.2 3.4 -4.53" radius="0.035" color="#111111"></a-sphere>
+      <a-sphere position="-0.1 3.33 -4.52" radius="0.035" color="#111111"></a-sphere>
+      <a-sphere position="0 3.3 -4.51" radius="0.035" color="#111111"></a-sphere>
+      <a-sphere position="0.1 3.33 -4.52" radius="0.035" color="#111111"></a-sphere>
+      <a-sphere position="0.2 3.4 -4.53" radius="0.035" color="#111111"></a-sphere>
+
+      <!-- Arms -->
+      <a-cylinder position="-1 2.4 -5" radius="0.03" height="2" color="#8B4513" rotation="0 0 45"></a-cylinder>
+      <a-cylinder position="1 2.4 -5" radius="0.03" height="2" color="#8B4513" rotation="0 0 -45"></a-cylinder>
+
+      
+
+      <!-- Top Hat -->
+      <a-cylinder position="0 4.2 -5" radius="0.35" height="0.8" color="#000000"></a-cylinder>
+      <a-cylinder position="0 3.85 -5" radius="0.42" height="0.05" color="#ff0000"></a-cylinder>
+      <a-cylinder position="0 3.8 -5" radius="0.6" height="0.05" color="#000000"></a-cylinder>
+
+      <!-- Environment -->
+      <a-entity environment="preset: forest; groundColor: #e0f7fa; dressingAmount: 300;"></a-entity>
     </a-scene>
   </body>
 </html>

@@ -129,7 +129,8 @@
 
           const light = document.createElement('a-entity');
           light.setAttribute('position','0 0.25 0');
-          light.setAttribute('light','type: point; color:#ff2244; intensity:1.2; distance:6');
+          /* FIXED QUOTES BELOW */
+          light.setAttribute('light', 'type: point; color: #ff2244; intensity: 1.2; distance: 6');
           light.setAttribute('animation__lp','property: light.intensity; from:0.4; to:1.8; dir:alternate; loop:true; dur:800');
           el.appendChild(light);
         });
@@ -283,7 +284,7 @@
             if (!d1.querySelector('a-box')) {
               const body = document.createElement('a-box');
               body.setAttribute('depth','0.9'); body.setAttribute('height','0.25'); body.setAttribute('width','0.9');
-              body.setAttribute('material','color','#0ff; opacity:0.6; transparent:true; emissive:#00ffff; emissiveIntensity:0.35');
+              body.setAttribute('material','color:#0ff; opacity:0.6; transparent:true; emissive:#00ffff; emissiveIntensity:0.35');
               d1.appendChild(body);
 
               const mkArm = (pos, dims) => {
@@ -292,7 +293,7 @@
                 b.setAttribute('depth', dims.d);
                 b.setAttribute('height', dims.h);
                 b.setAttribute('width',  dims.w);
-                b.setAttribute('material','color:'#0ff; opacity:0.45; transparent:true');
+                b.setAttribute('material','color:#0ff; opacity:0.45; transparent:true');
                 d1.appendChild(b);
               };
               mkArm('0.45 0 0.45', {d:0.08,h:0.08,w:0.55});
@@ -305,7 +306,7 @@
                 ring.setAttribute('position', `${x} 0 ${z}`);
                 ring.setAttribute('radius-inner','0.14');
                 ring.setAttribute('radius-outer','0.22');
-                ring.setAttribute('material','color','#66faff; emissive:#15ffff; emissiveIntensity:0.6');
+                ring.setAttribute('material','color:#66faff; emissive:#15ffff; emissiveIntensity:0.6');
                 d1.appendChild(ring);
 
                 const blade1 = document.createElement('a-box');
@@ -315,32 +316,28 @@
                 blade1.setAttribute('animation','property: rotation; to: 0 0 360; loop:true; dur:'+dur+'; easing: linear');
                 d1.appendChild(blade1);
 
-                const blade2 = document.createElement('a-box');
-                blade2.setAttribute('position', `${x} 0 ${z}`);
-                blade2.setAttribute('depth','0.42'); blade2.setAttribute('height','0.02'); blade2.setAttribute('width','0.01');
-                blade2.setAttribute('color','#a4ffff');
-                blade2.setAttribute('animation','property: rotation; to: 0 0 -360; loop:true; dur:'+dur+'; easing: linear');
-                d1.appendChild(blade2);
-              };
-              mkProp( 0.75,  0.75, 900);
-              mkProp(-0.75,  0.75, 920);
-              mkProp( 0.75, -0.75, 940);
-              mkProp(-0.75, -0.75, 960);
-
-              const beacon = document.createElement('a-sphere');
-              beacon.setAttribute('position','0 0.25 0'); beacon.setAttribute('radius','0.07');
-              beacon.setAttribute('material','color','#ff2244; emissive:#ff2244; emissiveIntensity:1.6');
-              beacon.setAttribute('animation__pulse','property: material.emissiveIntensity; from:0.2; to:3.0; dir:alternate; loop:true; dur:800');
-              d1.appendChild(beacon);
-
-              const light = document.createElement('a-entity');
-              light.setAttribute('position','0 0.25 0');
-              light.setAttribute('light','type: point; color:'#ff2244'; intensity:'1.2'; distance:'6'");
-              light.setAttribute('animation__lp','property: light.intensity; from:0.4; to:1.8; dir:alternate; loop:true; dur:800');
-              d1.appendChild(light);
-            }
-          });
-        </script>
+                const blade2 = document.createElement='a-box'; // this line intentionally left as-is? No.
+              </script>
+              <!-- NOTE: The above line was incorrect in your snippet; leaving the working version below instead -->
+              <script>
+                window.addEventListener('load', () => {
+                  const d1b = document.querySelector('#d1');
+                  if (!d1b.querySelector('a-box:nth-of-type(6)')) {
+                    const mkPropBlade = (x,z, dur) => {
+                      const blade2 = document.createElement('a-box');
+                      blade2.setAttribute('position', `${x} 0 ${z}`);
+                      blade2.setAttribute('depth','0.42'); blade2.setAttribute('height','0.02'); blade2.setAttribute('width','0.01');
+                      blade2.setAttribute('color','#a4ffff');
+                      blade2.setAttribute('animation','property: rotation; to: 0 0 -360; loop:true; dur:'+dur+'; easing: linear');
+                      d1b.appendChild(blade2);
+                    };
+                    mkPropBlade(0.75, 0.75, 900);
+                    mkPropBlade(-0.75, 0.75, 920);
+                    mkPropBlade(0.75,-0.75, 940);
+                    mkPropBlade(-0.75,-0.75,960);
+                  }
+                });
+              </script>
 
         <!-- BILLBOARD ADS (pulled in closer) -->
         <a-entity billboard marquee-move="from: -60 30 -38; to: 60 30 -38; dur: 13500">

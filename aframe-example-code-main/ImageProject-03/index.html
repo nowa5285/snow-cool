@@ -2,12 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Cyberpunk City — VR Neon Drones & Ads (Bigger + 270° + Closer)</title>
-    <!-- A-Frame (VR) -->
+    <title>Cyberpunk City</title>
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
     <script>
-      /* Face the camera (for billboards) */
       AFRAME.registerComponent('billboard', {
         tick: function () {
           const cam = this.el.sceneEl.camera;
@@ -18,7 +16,6 @@
         }
       });
 
-      /* Back-and-forth mover (for signs) */
       AFRAME.registerComponent('marquee-move', {
         schema: {from: {type:'vec3'}, to: {type:'vec3'}, dur: {default: 12000}},
         init() {
@@ -36,7 +33,6 @@
         }
       });
 
-      /* Drone patrol with gentle vertical sway */
       AFRAME.registerComponent('drone-flight', {
         schema: {
           from: {type:'vec3', default:{x:-10,y:6,z:-15}},
@@ -70,7 +66,7 @@
         }
       });
 
-      /* Clone drone geometry for D2..D6 once scene is ready */
+      // Clone visual drone bodies onto all drones except d1
       window.addEventListener('load', () => {
         const root = document.querySelector('#worldroot');
         const clones = root.querySelectorAll('[drone-flight]:not(#d1)');
@@ -129,14 +125,13 @@
 
           const light = document.createElement('a-entity');
           light.setAttribute('position','0 0.25 0');
-          /* FIXED QUOTES BELOW */
           light.setAttribute('light', 'type: point; color: #ff2244; intensity: 1.2; distance: 6');
           light.setAttribute('animation__lp','property: light.intensity; from:0.4; to:1.8; dir:alternate; loop:true; dur:800');
           el.appendChild(light);
         });
       });
 
-      /* === Floating neon object-lights scattered above ground === */
+      // Floating neon orbs
       window.addEventListener('load', () => {
         const group = document.getElementById('light-orbs');
         const mkOrb = (x, y, z, color, intensity, distance, bob = 0.5, dur = 2600) => {
@@ -156,7 +151,6 @@
           group.appendChild(holder);
         };
 
-        // Path of lights from player toward the city + a few around the sides
         mkOrb(-12, 7, 58, '#00ffff', 1.1, 26);
         mkOrb( 12, 7, 58, '#ff00aa', 1.1, 26);
         mkOrb(-16, 7, 46, '#00ffff', 1.0, 24);
@@ -169,89 +163,94 @@
     </script>
   </head>
 
-  <body style="margin:0; overflow:hidden; background:#06080F;">
+  <body style="margin:0; overflow:hidden; background:#02030A;">
     <a-scene
-      renderer="colorManagement: true; physicallyCorrectLights: true; toneMapping: ACESFilmic; exposure: 1.15"
+      renderer="colorManagement: true"
       shadow="type: pcfsoft"
-      fog="type: exponential; color: #0a1024; density: 0.009"
-      background="color: #06080F">
+      fog="type: exponential; color: #02030a; density: 0.003"
+      background="color: #02030a">
 
       <a-assets>
-        <!-- City assets (OBJ + optional MTL) -->
         <a-asset-item id="cityOBJ" src="assets/Cyberpunk.obj"></a-asset-item>
         <a-asset-item id="cityMTL" src="assets/Cyberpunk.mtl"></a-asset-item>
 
-        <!-- Billboard ad textures -->
         <img id="ad1" src="assets/4573867.jpg">
         <img id="ad2" src="assets/5323277.jpg">
         <img id="ad3" src="assets/9803512.jpg">
 
-        <!-- Extra object (replace with your GLB/GLTF) -->
         <a-asset-item id="extraGLB" src="assets/free_cyberpunk_hovercar.glb"></a-asset-item>
 
-        <!-- Equirectangular skybox -->
-        <img id="skyTex" src="assets/alien.jpeg" crossorigin="anonymous">
+        <!-- equirectangular sky image -->
+        <img id="skyTex" src="assets/editedStars.jpg">
       </a-assets>
 
       <!-- Camera -->
       <a-entity position="0 6 65" camera look-controls wasd-controls="acceleration: 90"></a-entity>
 
-      <!-- Equirect sky -->
-      <a-sky src="#skyTex" rotation="0 -90 0" color="#070a1a"></a-sky>
+      <!-- SKYBOX (your image) -->
+      <a-sky material="shader: flat; src: #skyTex" rotation="0 -90 0"></a-sky>
 
-      <!-- Global lights -->
-      <a-entity light="type: hemisphere; intensity: 0.85; color: #88c6ff; groundColor: #221144"></a-entity>
-      <a-entity light="type: directional; color: #a0b7ff; intensity: 0.95; castShadow: true" position="8 18 -6"></a-entity>
-      <a-entity light="type: point; intensity: 0.85; distance: 40; color: #00ffff" position="0 14 0"></a-entity>
+      <!-- Softer global lights so our spotlights dominate -->
+      <a-entity light="type: hemisphere; intensity: 0.3; color: #88c6ff; groundColor: #221144"></a-entity>
+      <a-entity light="type: directional; color: #a0b7ff; intensity: 0.4; castShadow: false" position="8 18 -6"></a-entity>
+      <a-entity light="type: point; intensity: 0.3; distance: 40; color: #00ffff" position="0 14 0"></a-entity>
 
-      <!-- Smaller ground -->
-      <a-plane id="ground"
-               position="0 0 0"
-               rotation="-90 0 0"
-               width="220"
-               height="220"
-               material="color:#09101f; metalness:0.5; roughness:0.2; opacity:0.98">
-      </a-plane>
+      <!-- STRONG SPOTLIGHT ON THE CAR -->
+      <a-entity position="0 14 60"
+                rotation="-65 0 0"
+                light="type: spot; color: #88ddff; intensity: 8; distance: 45; angle: 55; penumbra: 0.4; decay: 1; castShadow: true">
+      </a-entity>
+      <!-- Visible beam -->
+      <a-cone position="0 5 60"
+              rotation="0 0 0"
+              radius-bottom="5"
+              radius-top="0.4"
+              height="12"
+              material="color:#88ddff; opacity:0.23; transparent:true; side:double">
+      </a-cone>
 
-      <!-- BRIGHT NEON 'CYBERPUNK' SIGNS AT SPAWN (aesthetic only) -->
+      <!-- STRONG SPOTLIGHT ON THE CITY / BUILDING -->
+      <a-entity position="0 15 25"
+                rotation="0 0 0"
+                light="type: spot; color: #ff66aa; intensity: 10; distance: 80; angle: 70; penumbra: 0.5; decay: 1; castShadow: true">
+      </a-entity>
+      <!-- Visible building beam -->
+      <a-cone position="0 32 25"
+              rotation="0 0 0"
+              radius-bottom="22"
+              radius-top="1.2"
+              height="35"
+              material="color:#ff66aa; opacity:0.18; transparent:true; side:double">
+      </a-cone>
+
+      <!-- Ground -->
+      <a-plane id="ground" position="0 0 0" rotation="-90 0 0" width="220" height="220"
+               shadow="receive: true"
+               material="color:#09101f; metalness:0.5; roughness:0.2; opacity:0.98"></a-plane>
+
+      <!-- Spawn signs -->
       <a-entity id="spawn-neons" position="0 0 72">
-        <!-- LEFT -->
         <a-entity position="-8 3 0" billboard>
-          <a-plane width="6.2" height="2.2"
-                   material="color:#00ffff; emissive:#00ffff; emissiveIntensity:2.4; metalness:0.1; roughness:0.4; side:double"></a-plane>
-          <a-entity position="0 0 0.02"
-                    text="value: CYBERPUNK; align: center; width: 5.6; color: #00111a; letterSpacing: 2"></a-entity>
+          <a-plane width="6.2" height="2.2" material="color:#00ffff; emissive:#00ffff; emissiveIntensity:2.4; metalness:0.1; roughness:0.4; side:double"></a-plane>
+          <a-entity position="0 0 0.02" text="value: CYBERPUNK; align: center; width: 5.6; color: #00111a; letterSpacing: 2"></a-entity>
         </a-entity>
-        <!-- RIGHT -->
         <a-entity position="8 3 0" billboard>
-          <a-plane width="6.2" height="2.2"
-                   material="color:#ff00aa; emissive:#ff00aa; emissiveIntensity:2.4; metalness:0.1; roughness:0.4; side:double"></a-plane>
-          <a-entity position="0 0 0.02"
-                    text="value: CYBERPUNK; align: center; width: 5.6; color: #140015; letterSpacing: 2"></a-entity>
+          <a-plane width="6.2" height="2.2" material="color:#ff00aa; emissive:#ff00aa; emissiveIntensity:2.4; metalness:0.1; roughness:0.4; side:double"></a-plane>
+          <a-entity position="0 0 0.02" text="value: CYBERPUNK; align: center; width: 5.6; color: #140015; letterSpacing: 2"></a-entity>
         </a-entity>
-        <!-- BACK (behind player) -->
         <a-entity position="0 3 8" billboard>
-          <a-plane width="7.0" height="2.5"
-                   material="color:#ffaa00; emissive:#ffaa00; emissiveIntensity:2.2; metalness:0.1; roughness:0.4; side:double"></a-plane>
-          <a-entity position="0 0 0.02"
-                    text="value: CYBERPUNK; align: center; width: 6.3; color: #221100; letterSpacing: 2"></a-entity>
+          <a-plane width="7.0" height="2.5" material="color:#ffaa00; emissive:#ffaa00; emissiveIntensity:2.2; metalness:0.1; roughness:0.4; side:double"></a-plane>
+          <a-entity position="0 0 0.02" text="value: CYBERPUNK; align: center; width: 6.3; color: #221100; letterSpacing: 2"></a-entity>
         </a-entity>
       </a-entity>
-      <!-- END SPAWN NEONS -->
 
-      <!-- World root -->
       <a-entity id="worldroot" position="0 0 0" rotation="0 0 0" scale="1 1 1">
-
-        <!-- Polished black starter platform (slightly larger than city) -->
-        <a-box id="platform"
-               position="0 0.25 0"
-               width="160"
-               depth="160"
-               height="0.5"
-               material="color:#080808; metalness:1; roughness:0.08; envMapIntensity:1">
+        <a-box id="platform" position="0 0.25 0" width="160" depth="160" height="0.5"
+               material="color:#080808; metalness:1; roughness:0.08; envMapIntensity:1"
+               shadow="receive: true">
         </a-box>
 
-        <!-- City core — rotated 270° -->
+        <!-- City core -->
         <a-entity obj-model="obj: #cityOBJ; mtl: #cityMTL"
                   position="0 0 0"
                   rotation="0 270 0"
@@ -259,25 +258,27 @@
                   shadow="cast: true; receive: true">
         </a-entity>
 
-        <!-- DRONES (base paths) -->
+        <!-- Drones -->
         <a-entity id="d1" scale="2 2 2"
                   drone-flight="from: 24 12 -28; to: 36 12 -40; dur: 13500; swayAmp:0.28">
         </a-entity>
-
         <a-entity scale="2 2 2"
                   drone-flight="from: -34 14 -30; to: -26 14 -44; dur: 14000; swayAmp:0.26">
         </a-entity>
+        <a-entity scale="2 2 2"
+                  drone-flight="from: 40 16 18; to: 22 16 12; dur: 15500; swayAmp:0.30">
+        </a-entity>
+        <a-entity scale="2 2 2"
+                  drone-flight="from: -34 18 16; to: -22 18 24; dur: 15000; swayAmp:0.32">
+        </a-entity>
+        <a-entity scale="2 2 2"
+                  drone-flight="from: 0 20 -40; to: 12 20 -32; dur: 16000; swayAmp:0.27">
+        </a-entity>
+        <a-entity scale="2 2 2"
+                  drone-flight="from: -36 14 -12; to: -26 14 -16; dur: 14800; swayAmp:0.29">
+        </a-entity>
 
-        <a-entity scale="2 2 2"
-                  drone-flight="from: 40 16 18; to: 22 16 12; dur: 15500; swayAmp:0.30"></a-entity>
-        <a-entity scale="2 2 2"
-                  drone-flight="from: -34 18 16; to: -22 18 24; dur: 15000; swayAmp:0.32"></a-entity>
-        <a-entity scale="2 2 2"
-                  drone-flight="from: 0 20 -40; to: 12 20 -32; dur: 16000; swayAmp:0.27"></a-entity>
-        <a-entity scale="2 2 2"
-                  drone-flight="from: -36 14 -12; to: -26 14 -16; dur: 14800; swayAmp:0.29"></a-entity>
-
-        <!-- Attach full mesh to the first drone explicitly -->
+        <!-- Give d1 a visible body as well -->
         <script>
           window.addEventListener('load', () => {
             const d1 = document.querySelector('#d1');
@@ -316,30 +317,34 @@
                 blade1.setAttribute('animation','property: rotation; to: 0 0 360; loop:true; dur:'+dur+'; easing: linear');
                 d1.appendChild(blade1);
 
-                const blade2 = document.createElement='a-box'; // this line intentionally left as-is? No.
-              </script>
-              <!-- NOTE: The above line was incorrect in your snippet; leaving the working version below instead -->
-              <script>
-                window.addEventListener('load', () => {
-                  const d1b = document.querySelector('#d1');
-                  if (!d1b.querySelector('a-box:nth-of-type(6)')) {
-                    const mkPropBlade = (x,z, dur) => {
-                      const blade2 = document.createElement('a-box');
-                      blade2.setAttribute('position', `${x} 0 ${z}`);
-                      blade2.setAttribute('depth','0.42'); blade2.setAttribute('height','0.02'); blade2.setAttribute('width','0.01');
-                      blade2.setAttribute('color','#a4ffff');
-                      blade2.setAttribute('animation','property: rotation; to: 0 0 -360; loop:true; dur:'+dur+'; easing: linear');
-                      d1b.appendChild(blade2);
-                    };
-                    mkPropBlade(0.75, 0.75, 900);
-                    mkPropBlade(-0.75, 0.75, 920);
-                    mkPropBlade(0.75,-0.75, 940);
-                    mkPropBlade(-0.75,-0.75,960);
-                  }
-                });
-              </script>
+                const blade2 = document.createElement('a-box');
+                blade2.setAttribute('position', `${x} 0 ${z}`);
+                blade2.setAttribute('depth','0.42'); blade2.setAttribute('height','0.02'); blade2.setAttribute('width','0.01');
+                blade2.setAttribute('color','#a4ffff');
+                blade2.setAttribute('animation','property: rotation; to: 0 0 -360; loop:true; dur:'+dur+'; easing: linear');
+                d1.appendChild(blade2);
+              };
+              mkProp( 0.75,  0.75, 900);
+              mkProp(-0.75,  0.75, 920);
+              mkProp( 0.75, -0.75, 940);
+              mkProp(-0.75, -0.75, 960);
 
-        <!-- BILLBOARD ADS (pulled in closer) -->
+              const beacon = document.createElement('a-sphere');
+              beacon.setAttribute('position','0 0.25 0'); beacon.setAttribute('radius','0.07');
+              beacon.setAttribute('material','color:#ff2244; emissive:#ff2244; emissiveIntensity:1.6');
+              beacon.setAttribute('animation__pulse','property: material.emissiveIntensity; from:0.2; to:3.0; dir:alternate; loop:true; dur:800');
+              d1.appendChild(beacon);
+
+              const light = document.createElement('a-entity');
+              light.setAttribute('position','0 0.25 0');
+              light.setAttribute('light', 'type: point; color: #ff2244; intensity: 1.2; distance: 6');
+              light.setAttribute('animation__lp','property: light.intensity; from:0.4; to:1.8; dir:alternate; loop:true; dur:800');
+              d1.appendChild(light);
+            }
+          });
+        </script>
+
+        <!-- Billboard ads -->
         <a-entity billboard marquee-move="from: -60 30 -38; to: 60 30 -38; dur: 13500">
           <a-plane width="14" height="7" material="src: #ad1; side: double; color: #fff"></a-plane>
         </a-entity>
@@ -352,18 +357,17 @@
           <a-plane width="12" height="5.5" material="src: #ad3; side: double; color: #fff"></a-plane>
         </a-entity>
 
-        <!-- Extra object — moved right in front of the player -->
+        <!-- Hover car -->
         <a-entity id="extraObject"
                   gltf-model="#extraGLB"
                   position="0 0.5 58"
                   rotation="0 20 0"
                   scale="1.6 1.6 1.6"
+                  shadow="cast: true; receive: true"
                   animation__spin="property: rotation; to: 0 380 0; loop: true; dur: 14000; easing: linear">
         </a-entity>
 
-        <!-- Floating neon object lights (container; populated in JS) -->
         <a-entity id="light-orbs"></a-entity>
-
       </a-entity>
     </a-scene>
   </body>
